@@ -29,6 +29,7 @@ function sms (){
 
 
     echo "estoy enviando un mesaje de texto ";
+
 }
 
 
@@ -41,5 +42,6 @@ function sms (){
 $nokia = new Phone ("nokia" ,"negro", "digitel");
 
 
-echo $nokia->sms();
+echo $nokia->call();
 echo $nokia->color;
+
