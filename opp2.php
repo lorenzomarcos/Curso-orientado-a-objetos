@@ -35,9 +35,10 @@ show ("{$this->name} camina hacia $direction");
 
   public function takeDamage($damage){
 
+ 
 
-
-   $this->setHp ( $this->hp - $damage);
+   $this-> hp =  $this->hp - $this->absorbDamage($damage);
+   show("{$this->name} ahora tiene {$this->hp} puntos de vida");
 
    if ($this-> hp  <=0){
     $this->die();
@@ -47,33 +48,58 @@ show ("{$this->name} camina hacia $direction");
 
     public function die(){
         show ("{$this->name} muere");
-
-    }
-    private function setHp($points){
-        $this->hp=$points;
-        show("{$this->name} ahora tiene {$this->hp} puntos de vida");
+        exit();
     }
 
+    protected function absorbDamage ($damage)
+    {
+        return $damage;
+    }
+    
 }
 
 class  Soldier extends Unit{
 
     protected $damage = 40;
+    protected $armor;
+
+    public function __construct($name,) {
+
+       
+        parent::__construct($name);
+
+    }
+
+    public function setArmor(Armor $armor = null){
+    $this->armor=$armor;
+    }
+
+
 
     public function attack (Unit $opponent){
-        show ("{$this->name} Corta a {$opponent->getName()} en dos ");
+        show ("{$this->name} ataca con la espada a  {$opponent->getName()}  ");
         $opponent->takeDamage($this->damage);
             }
 
 
 
-public function takeDamage($damage){
-   return  parent::takeDamage($damage / 2 );
+
+
+protected function absorbDamage ($damage){
+
+    if ($this->armor){
+        $damage=$this->armor->absorbDamage($damage);
+    }
+
+    return $damage;
+}
+
+
 }
 
 
 
-}
+
 
 class Archer extends Unit{
 
@@ -84,21 +110,30 @@ class Archer extends Unit{
 $opponent->takeDamage($this->damage);  
  }
 
- public function takeDamage($damage){
+}
 
-    if (rand(0,1)  ){
-       return parent::takeDamage($damage);
-    }
-    
- }
 
+interface Armor {
+    public function absorbDamage($damage);
 
 }
 
-$ramm=new Soldier("Ramm");
+
+
+
+
+class BronzeArmor implements Armor {
+    public function absorbDamage($damage){
+        return $damage / 2 ;
+    }
+}
+
+$armor=new BronzeArmor();
+$ramm=new Soldier("Ramm" , $armor );
 
 $silence=new Archer ("silence");
 //$silince->move("el norte");
 $silence->attack($ramm);
 $silence->attack($ramm);
+$ramm->setArmor($armor);
 $ramm->attack($silence);
